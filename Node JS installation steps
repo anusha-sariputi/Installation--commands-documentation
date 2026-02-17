@@ -27,6 +27,19 @@ replace <MONGODB-SERVER-IPADDRESS> with IP address
 systemctl daemon-reload #refer line no 9
 systemctl enable catalogue 
 systemctl start catalogue
+Edit vim /etc/yum.repos.d/mongo.repo file to install mongodb. 
+	[mongodb-org-7.0]
+	name=MongoDB Repository
+	baseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/7.0/x86_64/
+	enabled=1
+	gpgcheck=0
+dnf install mongodb-mongosh -y  #It is the official MongoDB command-line shell.It allows you to Connect to MongoDB,Run queries,Load schema files,Insert data.
+cat /app/db/master-data.js
+mongosh --host MONGODB-SERVER-IPADDRESS </app/db/master-data.js #Load Master Data of the List of products we want to sell and their quantity information also there in the same master data.
+
+
+
+LOGS CHECK: /var/log or journalctl -u catalouge command
 -----------------------------------------------------------------------------------
 1. Backend service is responsible for adding the given values to database. Backend service is written in NodeJS, Hence we need to install NodeJS.
 2. Catalogue is a microservice that is responsible for serving the list of items that displays in roboshop application.
