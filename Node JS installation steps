@@ -27,6 +27,11 @@ replace <MONGODB-SERVER-IPADDRESS> with IP address
 systemctl daemon-reload #refer line no 9
 systemctl enable catalogue 
 systemctl start catalogue
+netstat -lntp
+systemctl status catalouge
+ps -ef | grep node
+telnet mongodb.daws88s.online
+curl http://localhost:8080/health
 Edit vim /etc/yum.repos.d/mongo.repo file to install mongodb. 
 	[mongodb-org-7.0]
 	name=MongoDB Repository
