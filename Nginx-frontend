@@ -74,3 +74,6 @@ vim /etc/nginx/nginx.conf  #Create Nginx Reverse Proxy Configuration to reach ba
   }
 
 systemctl restart nginx 
+cd /var/logs/nginx/ or less /var/logs/messages
+ls -l
+less access.log #top to bottom #use shift+g to go to bottom
