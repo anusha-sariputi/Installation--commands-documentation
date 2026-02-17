@@ -25,7 +25,7 @@ vim /etc/systemd/system/catalogue.service
     [Install]
     WantedBy=multi-user.target
 replace <MONGODB-SERVER-IPADDRESS> with IP address
-systemctl daemon-reload
+systemctl daemon-reload #refer line no 9
 systemctl enable catalogue 
 systemctl start catalogue
 -----------------------------------------------------------------------------------
@@ -45,4 +45,25 @@ systemctl start catalogue
    # Apart from running application, system user can't perform any running of commands like ls, cat, yum, systemctl, cp
 7. create app directory in root / directory. when i do ls / then we get bin  boot  dev  etc  home  opt  usr  var  app . If you want to create under user directory it's mkdir app /home/username/app
    mkdir -p /app mean If app folder already exists, -p won't throw an error. It creates if folder is not present and also it creates parent directories/folders if not there.
+8. Service tells systemd how to run application.
+	User=roboshop====>Run the service as the user named roboshop not as root for saftey
+	Environment=MONGO_URL="mongodb://<MONGODB-SERVER-IPADDRESS>:27017/catalogue"  Set an environment variable called MONGO_URL that your Node.js app can read.(It stores the MongoDB server IP address.)
+	ExecStart= /bin/node /app/index.js //This is the actual command systemd will run. Run Node.js and start your backend application.
+	SyslogIdentifier=catalogue //When logs go to the system logs (journalctl), they will be tagged as catalogue.
+	 [Install] ==> This section tells systemd when this service should start automatically.
+	[Install]
+		WantedBy=multi-user.target
+	Start this service automatically on boot when the system enters normal operating mode (multi user mode).
+//restart vs reload
+	restart: Stops the service ; Starts it again from scratch mean your application is fully restarted and Any updated files or environment variables take effect.
+	reload: Does not stop the service; Asks the service to reload configuration while running. 
+	nginx reload reloads config without downtime.Node apps generally must be restarted (no reload)
+//enable vs start
+    start : Starts the service now; Does not make it start automatically on reboot
+    enable: Make sure this service starts automatically every time the system boots.” ✔ What it does: Creates symlinks in systemd and Makes service start on next reboot
+9.  command used in Linux to tell systemd to reload its configuration file.
+	When you create or edit a service file, systemd doesn’t automatically know that the file has changed. 
+	systemctl daemon-reload tells systemd: “Hey systemd, I changed some service files — please re-read them.” 
+	Why It’s Needed Systemd keeps a cached copy of all service files in memory. If you modify a service file and don’t run daemon-reload, systemd will keep using the old version, and your changes won't take effect. 
+	When You Should Use It You must run: sudo systemctl daemon-reload whenever you: ✔️ Create a new service file ✔️ Modify an existing service file ✔️ Add/remove environment variables in the service ✔️ Change ExecStart command ✔️ Change permissions, user, or path After reloading, you usually run: sudo systemctl restart <service-name> to apply new changes.
 
