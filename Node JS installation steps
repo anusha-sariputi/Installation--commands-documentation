@@ -1,0 +1,48 @@
+dnf module disable nodejs -y    #Disable current module
+dnf module enable nodejs:20 -y  #Enable required module
+dnf install nodejs -y  #Install Node JS
+dnf update -y openssh openssh-server openssh-clients  #Update openssl packages too not break SSH login
+useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop  #refer line no 6
+mkdir /app #refer line no 7
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip #curl -o save the output to the file. This downloads the webpage and saves it as catalouge.zip. If I provide -O it saves output with same name in URL.
+cd /app 
+unzip /tmp/catalogue.zip
+cd /app 
+npm install //npm install dependecies or libraries
+vim /etc/systemd/system/catalogue.service
+    [Unit]
+    Description = Catalogue Service
+    
+    [Service]
+    User=roboshop
+    Environment=MONGO=true
+    // highlight-start
+    Environment=MONGO_URL="mongodb://<MONGODB-SERVER-IPADDRESS>:27017/catalogue"
+    // highlight-end
+    ExecStart=/bin/node /app/server.js
+    SyslogIdentifier=catalogue
+    
+    [Install]
+    WantedBy=multi-user.target
+replace <MONGODB-SERVER-IPADDRESS> with IP address
+systemctl daemon-reload
+systemctl enable catalogue 
+systemctl start catalogue
+-----------------------------------------------------------------------------------
+1. Backend service is responsible for adding the given values to database. Backend service is written in NodeJS, Hence we need to install NodeJS.
+2. Catalogue is a microservice that is responsible for serving the list of items that displays in roboshop application.
+3. Developer has chosen NodeJs, Check with developer which version of NodeJS is needed. Developer has set a context that it can work with NodeJS >20
+4. Install NodeJS, By default NodeJS 16 is available, We would like to enable 20 version and install list.
+5. You can list modules by using : dnf module list nodejs
+6. useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop 
+   System user creation is not mandatory but it's stronglt recommended for production deployments. We can run Node JS as root user or existing user also.
+   But using a system user gives several security, safety, and management advantages.
+   If your Node.js application gets compromised while running as root, the attacker immediately gets full root access.
+   But app runs as a limited system user, attacker can't delete system files,can't shut down services,cannot install packages,has limited permissions
+   A system user: 1. has no login shell 2. cannot SSH 3. cannot run system commands 4. only owns the app files 5. is restricted to that one service  and avoid accidental deletion, permission issues, random users modifying files.
+   # useradd command is to create new user # -- system mean Create a system user (service account), not a normal login user which has UID<1000. # --home /app mean Set /app as the home directory for this user.
+   # --shell /sbin/nologin mean don't allow this user to log in via SSH or shell. /sbin/nologin prevents the user from accessing a normal shell. # normal users have /bin/bash or /bin/sh
+   # Apart from running application, system user can't perform any running of commands like ls, cat, yum, systemctl, cp
+7. create app directory in root / directory. when i do ls / then we get bin  boot  dev  etc  home  opt  usr  var  app . If you want to create under user directory it's mkdir app /home/username/app
+   mkdir -p /app mean If app folder already exists, -p won't throw an error. It creates if folder is not present and also it creates parent directories/folders if not there.
+
