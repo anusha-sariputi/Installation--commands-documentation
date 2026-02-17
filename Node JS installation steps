@@ -7,7 +7,6 @@ mkdir /app #refer line no 7
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip #curl -o save the output to the file. This downloads the webpage and saves it as catalouge.zip. If I provide -O it saves output with same name in URL.
 cd /app 
 unzip /tmp/catalogue.zip
-cd /app 
 npm install //npm install dependecies or libraries
 vim /etc/systemd/system/catalogue.service
     [Unit]
@@ -17,7 +16,7 @@ vim /etc/systemd/system/catalogue.service
     User=roboshop
     Environment=MONGO=true
     // highlight-start
-    Environment=MONGO_URL="mongodb://<MONGODB-SERVER-IPADDRESS>:27017/catalogue"
+    Environment=MONGO_URL="mongodb://<MONGODB-SERVER-IPADDRESS>:27017/catalogue" #mondodb is a protocol like http
     // highlight-end
     ExecStart=/bin/node /app/server.js
     SyslogIdentifier=catalogue
