@@ -1,0 +1,11 @@
+sudo su -
+dnf install maven -y
+useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
+mkdir /app 
+curl -L -o /tmp/shipping.zip https://roboshop-artifacts.s3.amazonaws.com/shipping-v3.zip 
+cd /app 
+unzip /tmp/shipping.zip
+cd /app 
+mvn clean package #clean previous builds+install dependencies+pack the application #a new directory name target is created #buildfile in java is pom.xml and in node js it's package.json #ls -l #cat pot.xml
+  #Inside target we have .jar file #cd target/ #ls -l #.jar has packaged application and inbuilt server.
+mv target/shipping-1.0.jar shipping.jar 
